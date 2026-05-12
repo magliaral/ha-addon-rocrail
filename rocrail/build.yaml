@@ -1,0 +1,27 @@
+# Tells the HA Supervisor which base image to use when building this
+# add-on locally (post-2.0.0 we always build locally; there is no
+# prebuilt GHCR image any more).
+#
+# Why Debian 13 (Trixie) and not the official HA Alpine base:
+#   - The HA-blessed default base, ghcr.io/home-assistant/{arch}-base,
+#     is Alpine/musl. Rocrail binaries from rocrail.online are compiled
+#     against Debian/glibc.
+#   - On aarch64 specifically, Rocrail ships its binary for Trixie
+#     (libwxgtk3.2-1t64 — the t64 ABI). The HA Debian variant base
+#     (...-base-debian:latest) tracks Bookworm (libwxgtk3.2-1, pre-t64),
+#     which would silently break wxWidgets symbols.
+#   - Trixie has both the t64 wxWidgets and recent enough glibc for
+#     the amd64 (Bullseye-compiled) binary via backward compat.
+#
+# Why the docker.io/library/ prefix:
+#   The Supervisor validates build_from with the regex
+#   ^([a-zA-Z\-\.:\d{}]+/)*?([\-\w{}]+)/([\-\w{}]+)(:[\.\-\w{}]+)?$
+#   which requires at least one owner/image segment. Plain
+#   "debian:13-slim" has no owner part and falls through to the
+#   Supervisor default (ghcr.io/home-assistant/base:latest, Alpine),
+#   which would then fail at "apt-get: not found". The canonical
+#   docker.io/library/... form makes the regex happy.
+
+build_from:
+  aarch64: docker.io/library/debian:13-slim
+  amd64: docker.io/library/debian:13-slim

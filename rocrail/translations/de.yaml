@@ -1,0 +1,41 @@
+configuration:
+  log_level:
+    name: Log-Level
+    description: >-
+      Detailgrad der Rocrail-Server-Ausgaben. trace = alles, debug = viele
+      Details, info = normal, warning/error = nur Probleme.
+  workspace:
+    name: Workspace-Name
+    description: >-
+      Name des Workspace-Ordners direkt unter /share/rocrail/. Beim ersten
+      Start wird ein leerer Workspace mit dem Rocrail-Demo-Plan befüllt.
+      Reservierte Namen (nicht erlaubt): alles was mit '_' beginnt sowie
+      'lic.dat' und 'README.txt'.
+  rocweb_port:
+    name: Rocweb-Port
+    description: >-
+      Port für das Rocweb-Webinterface (wird via Ingress eingebunden).
+      Standard 8080.
+  client_protocol_port:
+    name: Rocrail Client-Protocol-Port
+    description: >-
+      TCP-Port fuer Rocview, andRoc und Rocrail-Clients. Standard 8051.
+  support_key:
+    name: Rocrail Support Key (optional)
+    description: >-
+      Füge hier den Inhalt deiner lic.dat-Datei ein, um Rocweb ohne
+      Demo-Beschränkung zu nutzen. Ohne Key läuft Rocweb nur 5 Minuten
+      pro Sitzung. Alternative: lic.dat-Datei nach /share/rocrail/lic.dat
+      kopieren. Key erhältst du unter
+      https://wiki.rocrail.net/doku.php?id=support-de
+  check_and_install_rocrail_update:
+    name: Rocrail-Update prüfen und installieren
+    description: >-
+      One-shot-Schalter. Beim nächsten Add-on-Start prüft das Add-on auf
+      rocrail.online, ob eine neuere Rocrail-Server-Revision für deine
+      Architektur verfügbar ist, lädt sie herunter und installiert sie
+      nach /data/rocrail/. Der Schalter wird danach automatisch wieder
+      ausgeschaltet. Decoder-Specs unter /data/rocrail/decspecs/ bleiben
+      unverändert. Im Normalbetrieb auf "aus" lassen — sobald eine
+      neuere Revision verfügbar ist, erscheint eine Home-Assistant-
+      Benachrichtigung.

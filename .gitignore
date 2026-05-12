@@ -1,0 +1,21 @@
+# Build-Artefakte
+*.zip
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Python bytecode caches
+__pycache__/
+*.pyc
+
+# Claude Code
+.claude/
+CLAUDE.md
+.release-notes-tmp/

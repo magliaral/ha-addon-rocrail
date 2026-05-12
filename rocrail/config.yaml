@@ -1,0 +1,107 @@
+# Home Assistant Add-on: Rocrail
+# https://developers.home-assistant.io/docs/apps/configuration/
+
+name: Rocrail
+# Version is the add-on wrapper version (this repo's release), NOT the
+# Rocrail server revision. The Rocrail revision is independent and
+# managed at runtime under /data/rocrail/.installed-revision.
+#
+# Format: <major>.<minor>.<patch> (clean SemVer, no suffix).
+# Bump rules in CI:
+#   feat:/feat(scope):       -> minor bump
+#   fix:/fix(scope):         -> patch bump
+#   feat!: / fix!: / *(s)!:  -> major bump
+#   chore/refactor/etc:      -> no bump
+#   push without CC bump     -> auto patch bump
+#
+# Don't hand-edit this value: the CI rewrites it after every successful
+# release based on the Conventional-Commit history since the previous
+# v-tag (see .github/workflows/build.yml).
+version: "1.0.0"
+slug: rocrail
+description: Home Assistant add-on that runs the Rocrail model railroad server
+url: https://github.com/magliaral/ha-addon-rocrail
+
+# Architectures - HA Yellow / RPi (aarch64) and Intel-based hosts (amd64)
+arch:
+  - aarch64
+  - amd64
+
+# No image: field on purpose. We do NOT publish prebuilt images on
+# GHCR. The HA Supervisor builds the container locally from this
+# Dockerfile on each user's machine. The Rocrail server itself is
+# downloaded from rocrail.online at runtime by run.sh — see LICENSE /
+# README for why we are a wrapper, not a redistributor.
+
+# Boot with the supervisor
+boot: auto
+init: false
+startup: services
+stage: stable
+
+# Ports:
+#   8008 Rocrail HTTP Server (Server Monitor, XML/HTTP API)
+#   8051 Rocrail Client Protocol (Rocview, andRoc)
+#   8052 SRCP Protocol (optional)
+ports:
+  8008/tcp: 8008
+  8051/tcp: 8051
+  8052/tcp: 8052
+ports_description:
+  8008/tcp: Rocrail HTTP Server (Server Monitor, XML/HTTP API)
+  8051/tcp: Rocrail Client Protocol (Rocview, andRoc, Custom Integration)
+  8052/tcp: SRCP Protocol (optional)
+
+# Ingress: Rocweb directly in the HA sidebar
+ingress: true
+ingress_port: 8080
+panel_icon: mdi:train
+panel_title: Rocrail
+panel_admin: false
+
+# Discovery service for a future hass-rocrail integration. As soon as
+# such an integration is installed, it can locate the add-on automatically.
+discovery:
+  - rocrail
+
+# APIs:
+#   hassio_api          -> discovery + Supervisor self-options reset
+#                          (auto-reset of check_and_install_rocrail_update)
+#   homeassistant_api   -> persistent_notification when a newer Rocrail
+#                          revision is available upstream
+hassio_api: true
+homeassistant_api: true
+
+# Volume strategy:
+#   share        -> workspaces (incl. each workspace's "backup/" with
+#                   Rocrail's internal plan-rotation), images, SVG
+#                   themes, lic.dat. Managed by the user via Samba /
+#                   File Editor; HA addon-backups do NOT include
+#                   /share/, so users back this up externally.
+#   addon_config -> tempfiles (included in HA addon-backups).
+# /data/ is the add-on's private path_data (in HA addon-backups) where
+# the Rocrail binary and decspecs live after the first install.
+map:
+  - addon_config:rw
+  - share:rw
+
+# Host networking is not needed - z21/ECoS/etc. are reached over TCP/IP
+# from the container network.
+host_network: false
+
+# User-facing options exposed in the HA UI
+options:
+  log_level: info
+  workspace: default
+  rocweb_port: 8080
+  client_protocol_port: 8051
+  support_key: ""
+  check_and_install_rocrail_update: false
+
+schema:
+  log_level: list(trace|debug|info|warning|error)
+  workspace: str
+  rocweb_port: port
+  client_protocol_port: port
+  support_key: password?
+  check_and_install_rocrail_update: bool

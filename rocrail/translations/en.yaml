@@ -1,0 +1,38 @@
+configuration:
+  log_level:
+    name: Log Level
+    description: >-
+      Verbosity of Rocrail server output. trace = everything, debug = many
+      details, info = normal, warning/error = only problems.
+  workspace:
+    name: Workspace Name
+    description: >-
+      Name of the workspace folder directly under /share/rocrail/. The
+      first time you start the add-on, an empty workspace is seeded from
+      the Rocrail demo plan. Reserved names (not allowed): anything
+      starting with '_' as well as 'lic.dat' and 'README.txt'.
+  rocweb_port:
+    name: Rocweb Port
+    description: >-
+      Port for the Rocweb HTTP UI (used by Ingress). Default 8080.
+  client_protocol_port:
+    name: Rocrail Client Protocol Port
+    description: >-
+      TCP port for Rocview, andRoc and Rocrail clients. Default 8051.
+  support_key:
+    name: Rocrail Support Key (optional)
+    description: >-
+      Paste the contents of your lic.dat file here to unlock unlimited
+      Rocweb sessions. Without a key, Rocweb runs in 5-minute demo mode.
+      Alternative: place lic.dat at /share/rocrail/lic.dat via Samba/File
+      Editor. Get a key at https://wiki.rocrail.net/doku.php?id=support-en
+  check_and_install_rocrail_update:
+    name: Check and install Rocrail update
+    description: >-
+      One-shot switch. On the next add-on start, the add-on checks
+      rocrail.online for a newer Rocrail server revision matching your
+      architecture, downloads it and installs it into /data/rocrail/.
+      The switch is automatically turned off again after the install.
+      Decoder specs under /data/rocrail/decspecs/ are preserved.
+      Leave off for normal operation — when a newer revision becomes
+      available you get a Home Assistant notification.
