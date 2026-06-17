@@ -64,6 +64,16 @@ default). After that it's Rocrail-managed — changes via Rocview /
 Rocweb (real command station, mDNS list, clock, etc.) survive
 restarts.
 
+## Stopping the add-on
+
+Before pressing **Stop** in the add-on UI, shut the server down cleanly
+from **Rocview** or **Rocweb** ("Shutdown Rocrail and Server") so your
+plan is saved. A direct add-on **Stop** terminates Rocrail with a signal
+within a few seconds — it does **not** save unsaved plan changes (Rocrail
+saves only on its own clean shutdown). The add-on stops without an error
+either way; the clean-shutdown step is only about persisting your latest
+plan edits.
+
 ## Updating Rocrail
 
 The add-on checks rocrail.online once per 24 hours for a newer Rocrail

@@ -710,7 +710,13 @@ bashio::log.info "  Listening on:     0.0.0.0:${CLIENT_PORT} (Client Protocol)"
 bashio::log.info "  Rocweb on:        0.0.0.0:${ROCWEB_PORT} (Ingress)"
 
 # ----- Graceful shutdown handler -----
-SHUTDOWN_EXIT_TIMEOUT=30
+# The total shutdown budget must stay UNDER the Supervisor's ~10s docker-stop
+# grace period. Otherwise the Supervisor SIGKILLs the whole container (exit 137)
+# before our own `exit 0` runs, and HA flags the add-on as errored / "not stopped
+# cleanly". A clean Rocrail shutdown saves the plan within ~1.5s but then idles
+# ~15s in a track power-off delay (irrelevant in a container) — we do not wait
+# that out. The clean plan-save is the user's job via Rocview/Rocweb before stop.
+SHUTDOWN_EXIT_TIMEOUT=7
 
 wait_for_rocrail_exit() {
     local timeout="${1:-30}"
@@ -730,7 +736,9 @@ wait_for_rocrail_exit() {
 shutdown_handler() {
     bashio::log.notice "Received termination signal - forwarding SIGTERM to Rocrail"
     if kill -TERM "${ROCRAIL_PID}" 2>/dev/null; then
-        bashio::log.info "SIGTERM sent to Rocrail (PID ${ROCRAIL_PID}) - saving plan and exiting"
+        # NOTE: SIGTERM does NOT guarantee a clean Rocrail plan-save. For an
+        # unsaved plan, shut down via Rocview/Rocweb before stopping the add-on.
+        bashio::log.info "SIGTERM sent to Rocrail (PID ${ROCRAIL_PID}) - stopping"
     fi
     wait_for_rocrail_exit "${SHUTDOWN_EXIT_TIMEOUT}"
     exit 0
