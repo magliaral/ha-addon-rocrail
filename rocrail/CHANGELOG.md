@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.1 - (17.06.2026)
+
+> fix(rocrail): cap shutdown wait below supervisor stop grace
+
 ## Version 1.0.0 - (12.05.2026)
 
 > Initial public release.
